@@ -1,0 +1,37 @@
+1. Once we define our own constructor, the compiler would not generate a default constructor for us.
+   we would have to explictly tell compiler to generate a default constructor;
+
+   Cylinder() = default;
+
+2. When are destructors called:
+   i) When an object is passed by value to a function (when the object goes out of scope of the function).
+   ii) Whena local object is returned from a function (for some compiler).
+   iii) When a local stack object goes out of sceope (dies).
+   iv) When a heap object is released with delete.
+
+3. Order of constructor and destructors calls:
+   Dog dog1("dog1");
+   Dog dog2("dog2");
+
+   => constructor of dog1 is called
+   => constructor of dog2 is called
+   => destructor of dog2 is called
+   => destructor of dog1 is called.
+
+   i.e. , destructors are called in reverse order of constructors.
+
+   => Destructors in C++ are called in the reverse order of constructors because of the dependency relationships established during object construction. 
+      This ensures that resources are properly released and cleaned up in the correct sequence, avoiding undefined behavior or resource leaks.
+
+
+4. This pointer points to the address of object.
+    => this pointers is also useful in chaining by returning the refererence to self.
+
+5. Difference between class and struct in c is that
+   -> members are private by default in class 
+   -> members are public by default in struct. (structs are kept for backward compatiblity with c)
+
+6. size of class object:
+   -> size of class objects is the sum of sizes of member variables.
+   -> Boundary alignment (padding is also there is not exactly sum.)
+   -> class which have only functions , if we create an object of the class, it will have size of 1 byte.
