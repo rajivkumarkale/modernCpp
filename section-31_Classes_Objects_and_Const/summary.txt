@@ -1,0 +1,111 @@
+This concept is known as const correctness.
+
+1. If we declare an object to be const
+    i.e. const Dog dog1("xyz", "abc", 1);
+
+    => then we won't be able to call any function on that
+       because according to compiler we could change something inside
+       so, compiler wont' allow it.
+
+    => so for being able to call functions on the const object, the called 
+        function has to be explictly decalred 'const';
+
+        e.g. void printInfo() const;
+
+    => we can't call any non-const member functions from within a const member function.
+
+2. The following assignment will also fail.
+    const Dog dog1("abc", "xyz", 3);
+    Dog* p_dog = &dog1;   // Error:   invalid conversion from const Dog* to Dog*
+
+    or
+    Dog& dog_ref = dog1; // Error: Can't convert from const Dog& to Dog&
+
+3. Going through pointer to const;
+    const Dog dog1("xyz", "abc", 3);
+    const Dog* p_const_dog = &dog1;
+
+    p_const_dog->set_name("hillo");  // Error : Expected, as trying to modify the dog_name field on a const object.
+    p_const_dog->printInfo();  // Error : Unexpected error, We aren't expecting this as we aren't modifying any variables there, but it occurs.
+
+4. Going through const reference
+    const Dog& const_dog_ref = dog1;
+    const_dog_ref.set_name("adfd"); // Error: expected 
+    const_dog_ref.get_name();  // Error: compiler wont' allow it.
+
+5. We can pass our cost object by the following:
+    i) Pass by value
+        => going to work, because it is a copy.
+
+    ii) Pass by (non const) reference
+        => compilation error. compiler wont' allow passing const object as argument.
+
+    iii) Pass by const reference
+        => compilation error. compiler won't allow to modify,i.e. calling any method through the passed const object reference isn't allowed.
+
+    iv) Pass by pointer (to non const)
+        => compilation error, compiler wont' allow passing const pointer thorugh pointer.
+        
+    v) Pass by pointer to const
+        => compilation error, compiler won't allow to modify,i.e. calling any method through the passed const pointer isn't allowed.
+
+6. Although if we have a pointer variable in the class, we can modify its value in the const marked function.
+    When you use a pointer, the const qualifier only ensures that the pointer itself cannot be changed (e.g., you can't reassign age to point to another address).
+
+7. We can overload our functions through the const keyword :
+    void print_info();
+    void print_info() const; 
+        => these two are overloads.
+
+8. Non-member function can't have the const keyword, only class associated functions supports the const keyword.
+
+9. Getters that also work as setters.
+    std::string &get_dog_name();  i.e. we return the reference of the attribute so that it can't be modified.
+
+    for const object we need to overload the above function 
+     const std::string get_dog_name() const;
+
+10. Dangling Reference:
+    const std::string& Dog::compile_dog_info() const {
+        std::string info = "Dog name: " + dog_name;
+        return info;
+    }
+
+    // the above local string will be remove from the stack memory once the function is done executing.
+       so it returns a dangling reference.
+    
+11. Dangling pointer:
+    int * Dog::return_int_pointer() const {
+        int jumps_per_minute {40};
+        return &jumps_per_minute;
+    }
+
+12. We can modify a member variable from within a const function.
+    There is a special keyword 'mutable' for this purpose,
+    mostly these variables are debugging variable.
+
+    e.g.
+
+    mutable size_t info_print_count{0}; // variable declared as mutable.
+
+    void print_info() const {
+        ++info_print_count;         // this is allowed as the variable is marked as mutable.
+    }
+
+13. structured bindings in c++:
+    struct Point
+    {
+        double x;
+        double y;
+    };
+
+    Point point1{4.4, 2.3};
+    auto [a, b] = point1;
+    std::cout << a << "  " << b << std::endl;
+
+
+    => the a and b are just copies.
+    => the order is important.
+    => only works if the members variables are public.
+    => works only with the auto keyword
+    => auto &[x, y] = point1;  -> reference structured bindings are also possible.
