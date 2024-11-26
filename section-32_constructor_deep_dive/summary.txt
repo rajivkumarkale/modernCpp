@@ -1,0 +1,184 @@
+1. Default paramater for constructor
+    Cylinder(double radius_param, double height_param = 10);
+
+    -> we can also give both the argument the default value 
+        Cylinder(double radius_param = 5, double height_param = 10);
+
+        Cylinder() = default;  // <= remove this.
+
+        but in this case we will have to remove the default constructor,
+        as the compiler won't be able to tell which one to call and thus
+        results in the compilation error.
+    
+    -> give default paramater value either in the decalration or in the defination,
+       but not in both, otherwise it will be compilation error,
+       generally the decalration is preferred.
+
+    -> default parameters are specified in the end first and then move towards left.
+        Cylinder(double radius_param = 5, double height_param );
+
+        i.e. this is wrong and will give error.
+
+
+2. Initializer lists for constructors:
+    Cylinder::Cylinder(double radius_param, double height_param)
+    : base_radius(radius_param), height(height_param) {}
+
+    -> Objects are initialize when they are created, so they avoid unnecessary copies.
+
+3. Initializer lists vs memeber wise copy initialization
+    => Member wise copy 
+        -> Two steps:
+            i) object creation
+            ii) member variable assignment
+        -> Potential unnecessary copies of data 
+        -> Order of member variables doesn't matter
+    
+    => Initializer lists:
+        -> initialization happens at real object creation.
+        -> Unnecessary copies avoided.
+        -> Order of member variables matters.
+
+    Recommendation: Always prefer initializer lists over member wise copy initialization.
+
+
+4. explicit constructor:
+    bool compare(const Square& square1, const Square& square2) {
+        return (square1.surface() > square2.surface());
+    }
+
+    int main(){
+        Square square1(30.0);
+        // 44.5 Implicityly converted to Square(44.5)
+        std::cout << "square1 > 44.5: " << compare(square1, 44.5) << std::endl;
+    }
+
+    => as in the case show above the constructor will be called for 44.5 and it will be Implicityly converted to 
+        Square object and then will be compared.
+    
+    => If in case we don't want a Implicit conversion, then we can mark the constructor as explicit.
+
+    => for doing this conversion, the compiler will create a temporary object and pass it as reference and 
+        once the compare function executes, that temporary object will be thrown away.
+
+    Syntax:
+        explicit Square(double side_param);
+
+        In other cases where only one parameter is present and the other is taking some default value we can mark
+         as explicit to avoid confusion.
+        
+        explicit Square(double side_param, std::string color = "black");
+
+5. Constructor delegation:
+    => move the responsiblity of creating a consturctor with less parameter to other constructor which has all parameters.
+    
+    => we can only call Delegted constructor in the initialize list and no other parameter can be assignmened in the initializer list 
+        if something needs to be initialized then it will be done in the body of the constructor.
+
+            Sphere::Sphere(double radius_param) : Sphere(radius_param, "RED", 4), position(4.5){}  // wrong
+            Sphere::Sphere(double radius_param) : position(4.5), Sphere(radius_param, "RED", 4){} // wrong 
+            
+            Sphere::Sphere(double radius_param) : Sphere(radius_param, "RED", 4){ position = 4.5} // right
+
+
+            Sphere::Sphere(double radius_param){
+                // this isn't consturctor delegation
+                // an object will be creted and then destroyed once we get out of the constructor scope.
+                Sphere(radius_param, "RED", 4);
+            }
+
+    => Order of Execution
+        -> First the Three param constructor will be called , values will be assigned using initializer list 
+        -> Then the body of the Three param constructor will be executed.
+        -> Then body of the One param constructor will be called.
+
+
+6. Copy constructor in c++:
+    Person p1("John", "Snow", 25);
+    p1.print_info();
+
+    // Creating Copies:
+    Person p2(p1);          // <= this will create a shallow copy.
+    p2.print_info();
+
+
+    => Pointers are copied directly (so address will be copied), instead of the values they are holding.
+        person1.set_age(28);
+        person1.print_info();
+        person2.print_info();
+
+        because the pointers are copied directly, this will results in the age being changed in both objects,
+            even if we change in one.
+    
+    => Once we write our own copy constructor, the default consturctor will be disabled and ours will be active.
+
+    => Some bad way to create a copy Constructor which DOES NOT work or Not a recommended practice.
+        1. Invalid copy consturctor : Taking object by value isn't allowed as it
+        leads to recursive calls. so, it is a compilation error.
+
+            Person::Person(const Person source_person)
+                : last_name{source_person.last_name}, first_name{source_person.first_name},
+            age{source_person.age} {}
+        
+
+
+        2. Behaviour of Default copy constructor : shallow copy, address of pointers
+        get's copied instead of value. 
+        
+            Person::Person(const Person &source_person) :
+                last_name{source_person.get_last_name()},
+                first_name{source_person.get_first_name()},
+                age{source_person.get_age()} {}
+        
+
+
+        3. Valid copy constructor
+            But not the best way, as we can use the constructor delegation.
+            
+            Person::Person(const Person &source_person)
+                : last_name{source_person.get_last_name()},
+                first_name{source_person.get_first_name()},
+                age{new int{*source_person.get_age()}} {}
+
+
+        4. copy constructor using constructor delegation. RECOMMENDED WAY.
+            
+            Person::Person(const Person &source_person)
+                : Person(source_person.get_last_name(), source_person.get_first_name(),
+                        *source_person.get_age()) {}
+
+        5. Another way is to assign directly using member variable, instead of using the 
+            getters, it is equally valid to approach 4.
+
+                Person::Person(const Person& source_person)
+                    : Person{source_person.first_name, source_person.last_name,
+                            *source_person.age} {}
+
+    => Copy constructor can be overloaded by const , i.e.
+        Person::Person(const Person& source_person); // this will be called when copied from const object 
+        Person::Person(Person& source_person)   // this will be called when copied from non-const object.
+
+    => Putting objects into arrays creates copies and then inserts into the array.
+            Person s1{"John", "out"};
+            Person s2{"Sean", "out"};
+            Person s3{"Billy", "out"};
+
+            // Copies are created and then stored in arrays
+            Person students[]{s1, s2, s3, Person{s1}};
+
+            // Use references to avoid copy, i.e. use Person& student: students
+            for (Person student : students) {
+                student.print_info();
+            }
+
+            // In this case only 3 copy constructor will be called 
+            // modern compiler are smart enough to see that the 4th object is temporary and will be 
+            // thrown away , so compiler does optimization and won't call the copy constructor for the last one.
+            Person students[]{s1, s2, s3, Person{"Bob", "out"}}};
+
+    
+    => Shallow Copy vs Deep Copy:
+        -> Shallow copy: member wise copy of member variables, even for pointers.
+        -> Deep copy: When pointer member variables are involved, allocating new memory and copying in data value from the source pointer.
+
+    
