@@ -182,3 +182,28 @@
         -> Deep copy: When pointer member variables are involved, allocating new memory and copying in data value from the source pointer.
 
     
+7. Move constructor:
+    => Stealing data from temporary objects
+    
+    => Point p3(Point(40.7, 50.3)); <= It will first create a temporary point object and then copy it to p3.
+        The purpose of the move constructor is not to waste temporarily created objects (which will be thrown away after shortly after use),
+            and use them for our purpose. It is mostly helpful when there is some pointer variable and it is pointing to some very heavy object.
+            and in that case instead of creating a new copy we will just copy the address of the heavy object, just making this faster.
+
+    => Move constructor use && to take the object:
+        Syntax: Point(Point&& source_point);
+    
+    => we need to copy pointers and then make the pointers of the source object to nullptr;
+
+    => we need to call std::move() to make sure our source object is treated as temporary.
+        Point p3(std::move(Point(232.3, 3.3))); 
+    
+8. Delete constructor.
+    => Syntax: Point() = delete;
+
+    => Now compiler will give error if we call a no param constructor of point.
+        e.g. Point p1; // Error 
+    
+    => we can also delete the copy constructor and the move constructors
+
+    
