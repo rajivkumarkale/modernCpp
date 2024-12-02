@@ -206,4 +206,40 @@
     
     => we can also delete the copy constructor and the move constructors
 
+9. Initializer Constructor:
+    => Syntax:
+        Point(std::initializer_list<double> list) {
+            x = *(list.begin());
+            y = *(list.begin() + 1);
+        }
+
+        and to init we call;
+        Point point1{12.12, 132.3};
+
+        => these will be copied in the list according the order it is filled.
     
+10. Designated Initializers (supported onwards C++20)
+    #include <iostream>
+
+    struct Component {
+        double x;
+        double y;
+        double z;
+    };
+
+    int main() {
+        Component c1{.x = 10, .y = 20, .z = 30};
+        Component c2{.x = 2.4, .z = 5.8};
+        Component c3{.y = 5.9, .z = 6.1};
+        //Component c4{.x = 4.5, .z = 5.4, .y = 9.5};  // cann't fip order , compilation error.
+        return 0;
+    }
+
+    => we can not flip order, but can skip some of the init. whatever we skip is initialized to 0.
+
+11. Uniform Initialization:
+    => Initializing any object either through () or {}.
+    => narrowing conversion isn't allowed with the {} but is allowed with ().
+        =>narrowing conversion, e.g. converting from double to int.
+
+
