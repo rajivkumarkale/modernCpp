@@ -37,3 +37,46 @@
     };
 
     => In the above example class Cat is friend of class Dog , but the reverse isn't true.
+
+
+4. One use case:
+    => Overloading input (>>) and output (<<) operators for custom classes in C++ is often done using friend functions 
+       because these operators require access to private or protected members of the class.
+
+    class Person {
+    private:
+        std::string name;
+        int age;
+
+    public:
+        // Constructor
+        Person(std::string name = "", int age = 0) : name(name), age(age) {}
+
+        // Friend functions for input and output
+        friend std::ostream& operator<<(std::ostream& out, const Person& p);
+        friend std::istream& operator>>(std::istream& in, Person& p);
+    };
+
+    // Overload << (output stream)
+    std::ostream& operator<<(std::ostream& out, const Person& p) {
+        out << "Name: " << p.name << ", Age: " << p.age;
+        return out;
+    }
+
+    // Overload >> (input stream)
+    std::istream& operator>>(std::istream& in, Person& p) {
+        std::cout << "Enter name: ";
+        in >> p.name;
+        std::cout << "Enter age: ";
+        in >> p.age;
+        return in;
+    }
+
+    int main() {
+        Person p;
+
+        std::cin >> p; // Read Person from input
+        std::cout << p; // Write Person to output
+
+        return 0;
+    }
