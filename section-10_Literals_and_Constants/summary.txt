@@ -1,0 +1,43 @@
+1. Literals:
+    => literals are constant values embedded directly into the source code. 
+       They represent fixed values of a specific type, such as numbers, characters, or strings. 
+       Since they are constants, their values cannot be modified during program execution.
+    
+    => we can use prefix and suffix to speicify the type of literal .
+       e.g. unsigned char word = 53u;  // u is suffix for unsigned
+            int curr = 0xff;   // 0x is prefix for hexadecimal literal.
+
+            U => unsigned
+            L => long
+            LL => long long 
+            UL => unsigned long
+            ULL => unsigned long long 
+            f => float literal 
+
+            Prefix:
+            0x => hexadecimal
+            0 => Octal
+            0b => binary
+
+            character literal and string literal
+
+    => Types of Literals:
+        1. Integer Literals : Decimal, Octal , hexadecimal, Binary.
+        2. Floating point Literal.
+        3. Character Literal
+        4. String Literals.
+        5. Boolean literal
+        6. Null pointer literal.
+        7. User defined literal (Introduced in C++11)
+        8. Constant Literals: Constants like constexpr variables can serve as literals in certain contexts.
+    
+2. Constants:
+    => Can only be initialized at the time of declaration and then remains read only.
+    
+    => constant can't be declared without initialization.
+    
+    => we can't change value of a constant variable.
+
+
+3. Constant Expression.
+    

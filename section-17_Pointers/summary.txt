@@ -1,0 +1,147 @@
+1. Declaring Pointers:
+    => If a pointer is declared and not initialize to point to some address,
+        then it is advised to initialize it with nullptr.
+        -> int *p = nullptr; 
+
+        -> int a = 5;
+           int *p_a = &a;
+
+    => All pointers on a system will have same size.
+
+    => Pointers only stores the type for which it was declared:
+        int *p_int1 = nullptr;
+        double double_var = 33.0;
+
+        //p_int1 = &double_var; // Compilation Error.
+
+2. Pointer to char:
+    => we can initialize the pointer to char to a string literal.
+        char *p_message = "Hello World";
+        
+        // p_message[0] = 'Z'; // undefined behavior because of this statement
+        Note: The above line of code will result in undefined behavior because 
+              it attempts to modify a string literal, which is stored in a read-only section of memory. 
+
+    => What Happens with char *p = "hello world!"; ???
+        -> "hello world!" is a string literal.
+        
+        -> In C++, string literals are stored in a read-only memory segment. While they are of type const char[], 
+              they can be assigned to a non-const pointer like char * for backward compatibility with C.
+        
+        -> Assigning a string literal to a char * pointer does not create a modifiable copy; the pointer simply points to the literal.
+
+        -> that is why it is recommended to write it like (const char *p_message = "hello world"), so if we try to modify accidentally 
+           then it will result in the compilation error. 
+    
+    => the main difference between a C string and a string literal is that a C string is a mutable sequence of characters stored in memory, 
+       while a string literal is an immutable sequence of characters directly stored in the program's executable binary code.
+
+3. Arrays of Pointer to Char:
+    =>
+        const char *greetings = {
+            "Hello",
+            "Hola",
+            "namaste"
+        };
+
+        It is much better way then storing using 
+            char greetings[][10];
+        -> as we can now use any length and no memeory is wasted if string is shorter than 10.
+
+
+4. const Pointer and Pointer to const    
+    => naming:
+        const int* => pointer to const 
+        int * const => const pointer 
+
+    => Pointer to const
+        const int* p_number = &number1;
+        // *p_number = 55;  // compilation error: Pointer to const can't be modified
+        p_number = &number2; // this is allowed
+
+    => const pointer
+        int* const p_num = &number1;
+        *p_num = 55;  // this is allowed
+        // p_num = &number2; // compilation error: const pointer can't point to some other location.
+
+    => const pointer to const 
+        const int* const p_num = &number1;
+        // *p_num = 55; // not allowed: compilation error 
+        // p_num = &number2; // not allowed : Compilation error 
+
+5. Arrays of const pointer to const char:
+    => 
+        const char* students[] = {
+            "himmat",
+            "rajiv"
+        };
+
+        students[0] = "arpit"; // this is allowed
+
+        // if we want to prevent changing the strings
+        const char* const students1[] = {
+            "himmat",
+            "rajiv"
+        };
+
+        // students1[0] = "arpit"; // compilation error
+
+6. Pointers and Arrays:
+    => Similarities:
+        ->  int scores[] = {1, 2, 3};
+            int *p_scores = scores;
+
+            if we print scores or p_scores , both will print address of first element of array.
+
+        -> we can use the array indexing on pointers 
+            i.e. p_scores[2] to modify and print the 2nd index element.
+    
+    => Differences:
+        ->  int scores[] = {1, 2, 3};
+            int *p_scores = scores;
+
+            int num2 = 4;
+            p_scores = &num2;
+
+            // Not allowed: The array name is a pointer, but a special pointer that kind of identifies the entire array.
+            // We'll get the error: incompatible types in assignment of int* to int[3];
+            // scores = &num2; // not allowed
+        
+        -> std::size doesn't work for raw pointers.
+            int scores[] = {1, 2, 3};
+            int *p_scores = scores;  // this is called pointer decay, some information of array is lost.
+
+            cout << std::size(scores) << endl; // will print 3
+            // cout << std::size(p_scores) <<endl; // compilation error. 
+
+            cout << sizeof(scores) << endl; // will print 12 (i.e. 3 * 4)
+            cout << sizeof(p_scores) << endl; // will print 8 (i.e size of pointer)
+    
+    => Note:
+        -> Compile-Time Metadata:
+            -> The size of the array is known to the compiler because it is specified at declaration (e.g., int arr[5];).
+            -> The compiler uses this size during compilation for operations like:
+                    -> Calculating the total memory needed for the array.
+                    -> Validating array bounds in some cases (e.g., in static analysis or with std::array).
+        
+        -> No Runtime Storage:
+            -> At runtime, the array itself only consists of its elements stored in contiguous memory.
+            -> There is no extra memory allocated for the size of the array at runtime.
+
+
+7. Pointer Arithmetic : 
+    => Incrementing / decrementing on the pointer, is going to move the pointer address by the size of the type 
+       pointed to by the pointer.
+    
+    => pointer + x  : moves the pointer forward by x * sizeof(type of pointer) bytes.
+       decrementing will take backwards.
+    
+    => int scores[] = {1, 2, 3};
+       int *p_scores = scores;
+
+       scores[0] = 31;        // Array index notation
+       *(scores + 1) = 32;    // Equivalent to scores[1] = 32, Pointer arithmetic on array name
+       *(p_scores + 2) = 33;  // Equivalent to scres[2] = 33,  Pointer arithmetic on p_score pointer 
+
+    
+    => 

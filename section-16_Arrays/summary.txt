@@ -89,3 +89,33 @@
     then call:
     int diceValue = (std::rand() % 6) + 1;
 
+6. Multidimensional Array:
+    => we can omit the size of the first dimension when declaring and intitializing Multidimensional array.
+        e.g. 
+        int packages[][3] {
+            {1,2,3},
+            {3,4,5}
+        };
+
+    => compiler auto fills the missing values with 0.
+        e.g. 
+        int arr[][3]{{1, 2}, {4, 5, 6}};
+
+        will result in {{1, 2, 0}, {4, 5, 6}};
+
+  
+7. Multidimensional array of characters:
+    => 
+        char members[][10] = {
+            {'J', 'o', 'h', 'n'},
+            {'r', 'a', 'j', 'i', 'v'}
+        };
+
+        or 
+        // this is better as string literal are null terminated.
+        char members[][10] = {
+            "John",
+            "rajiv"
+        }
+
+
