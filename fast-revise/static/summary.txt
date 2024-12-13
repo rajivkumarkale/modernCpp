@@ -1,0 +1,182 @@
+1. Static Non-Member Functions
+    -> Definition: A non-member function (not part of a class) can be declared as static by adding the static keyword in its declaration.
+    -> Purpose: The static keyword restricts the scope of the function to the file in which it is defined. This is also known as internal linkage.
+    -> Characteristics:
+        -> It cannot be accessed from other translation units (i.e., other .cpp files).
+        -> It helps avoid naming conflicts, as its name isn't visible outside its file.
+        -> Typically used for helper or utility functions that are private to a file.
+
+2. Static Variables in a Non-Member Function
+    -> Definition: A variable declared as static inside a non-member function retains its value between function calls.
+    -> Purpose: It allows you to maintain state across multiple calls to the function while keeping the variable local to the function (not globally accessible).
+    -> Characteristics:
+        -> It is initialized only once, at the first call to the function.
+        -> Its value persists between calls to the function.
+        -> It is not visible outside the function.
+
+3. Static Global Variables
+    -> Definition: A variable defined at the file scope can be declared static, which restricts its visibility to that file (similar to static non-member functions).
+    -> Purpose: It provides encapsulation at the file level and avoids name collisions with other global variables in different files.
+    -> Characteristics:
+        -> It is initialized only once.
+        -> It has a lifetime that lasts for the duration of the program.
+        -> It has internal linkage, meaning it can't be accessed outside its file.
+
+4. Static Member Variables
+    -> Definition: A member variable declared with the static keyword is shared among all objects of the class. It belongs to the class, not to any specific object.
+    -> Purpose: Used for data that should be shared across all instances of a class (e.g., counters, settings, shared states).
+    -> Characteristics:
+        -> It is initialized only once and exists for the lifetime of the program.
+        -> It is not part of an object’s memory layout and does not contribute to the size of the object.
+        -> It must be defined (and optionally initialized) outside the class definition, but is declared within class.
+        -> It can be accessed using either an object of the class or the class name itself (recommended).
+        -> Static member variables can only be of one storage duration: static storage duration.
+    -> Note:
+        -> We can initialize const and constexpr static variable members within class.
+        -> We can't in-class initialize static char * member variables.
+        ->  constexpr static const char* s_version {"1.2.3.4"}; => this is allowed to be init within the class.
+        -> Private static member variables can't be accessed outside the class.
+            e.g.
+            class X{
+                private:
+                    static const int b;
+            };
+
+            void print(X& x){
+                cout << X::b << endl; // compilation error, can't access private member variable outside, need to make it public.
+            }
+        -> inline static member variables can be initialized within the class.
+
+
+5. Static Member Functions
+    -> Definition: A member function declared with the static keyword does not operate on any instance of the class. 
+                   It can only access static members (variables or other functions) of the class.
+    -> Purpose: Used for functionality that doesn't depend on instance-specific data, often for utility functions related to the class.
+    -> Characteristics:
+        -> It can be called using the class name (preferred) or through an object of the class.
+        -> It cannot access non-static member variables or functions directly, because it is not tied to any instance.
+        -> It is defined and declared within the class like regular functions but prefixed with static.
+
+====================
+INNER CLASS IN C++:
+-> When inner is private, its objects can't be created from the outside, like in main.
+-> Outer doesn't have access to private section of Inner.
+-> Innder has access to private section of Outer.
+-> Inner can directly access static members of Outer, but can't access member variables without going through an object.
+
+
+=======================
+STORAGE DURATION IN C++:
+In C++, storage duration determines the lifetime of an object or variable—how long it exists in memory and when it is created and destroyed. 
+    There are four types of storage durations in C++:
+
+1. Automatic Storage Duration
+    -> Description: Variables with automatic storage duration are created when the program's control enters the block (e.g., a function or a loop) and destroyed when the control exits the block.
+    -> Characteristics:
+        -> Typically applies to local variables in functions or blocks.
+        -> Memory is allocated on the stack.
+        -> Default for variables declared inside functions without the static or extern specifiers.
+        -> They are not initialized automatically, so their value is undefined if not explicitly initialized.
+    -> e.g.
+        void example() {
+            // x is created here
+            int x = 10; // Automatic storage duration
+        } // x is destroyed when the function exits
+
+2. Static Storage Duration
+    -> Description: Variables with static storage duration exist for the entire lifetime of the program. They are created when the program starts and destroyed when the program ends.
+    -> Characteristics:
+        -> Applies to:
+            -> Global variables.
+            -> Static local variables declared inside functions with the static keyword.
+            -> Static member variables in classes.
+        -> Memory is allocated in a fixed location (often in the global/static data segment).
+        -> Automatically initialized to:
+            -> Zero for integers and floating-point types.
+            -> Null for pointers.
+            -> Default constructors for objects.
+    -> e.g.
+            #include <iostream>
+            void example() {
+                static int counter = 0; // Static storage duration
+                ++counter;
+                std::cout << "Counter: " << counter << std::endl;
+            }
+
+            int main() {
+                example(); // Counter: 1
+                example(); // Counter: 2
+                return 0;
+            }
+
+3. Thread Storage Duration
+    -> Description: Variables with thread storage duration exist for the lifetime of the thread in which they are created. These are specific to multithreaded programs.
+    -> Characteristics:
+        -> Declared with the thread_local keyword.
+        -> Each thread gets its own instance of the variable.
+        -> The variable is destroyed when the thread ends.
+        -> Memory is typically managed in a thread-specific storage area.
+    -> e.g.
+        #include <iostream>
+        #include <thread>
+
+        thread_local int counter = 0;
+
+        void increment() {
+            ++counter;
+            std::cout << "Thread " << std::this_thread::get_id() << " Counter: " << counter << std::endl;
+        }
+
+        int main() {
+            std::thread t1(increment);
+            std::thread t2(increment);
+
+            t1.join();
+            t2.join();
+
+            return 0;
+        }
+
+4. Dynamic Storage Duration
+    -> Description: Variables with dynamic storage duration are explicitly managed using new and delete or smart pointers. Their lifetime is controlled by the programmer, and they exist until explicitly deallocated.
+    -> Characteristics:
+        -> Memory is allocated on the heap.
+        -> Useful for creating objects whose lifetime needs to extend beyond the scope where they were created.
+        -> Mismanagement of memory (forgetting delete) can lead to memory leaks.  
+    -> e.g. 
+        #include <iostream>
+
+        int main() {
+            int* ptr = new int(10); // Dynamic storage duration
+            std::cout << "Value: " << *ptr << std::endl;
+            delete ptr; // Deallocate memory
+            return 0;
+        } 
+
+========================================================    
+INHERITENCE::
+1. 
+
+2. Base Class Access modifiers:
+    i) Public: No change, public remains public, private remains private, protected remains protected.
+    ii) Protected: Public and protected becomes protected, private remains private.
+    ii) Private:  Everything becomes private.
+Note: 
+    -> We dont have access of private variable of base class in public inheritance, 
+        but when i calculate the size of the derived class object, the size includes the private variable of the base class.
+
+    -> Always create a default constructor for your classes, especially if they will be part of an inheritance hierarchy.
+
+    -> 
+
+TODO::
+    -> Hybrid Inheritance in C++ with Diamond Problem
+    -> Multiple Inheritance in C++ with Ambiguity
+
+
+=============================================================
+POLYMORPHISM::
+-> When you call the virtual function through a base class pointer, the access specifier in the base class determines whether the function is 
+    accessible, regardless of the access specifier in the derived class.
+
+-> 
